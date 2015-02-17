@@ -1,18 +1,33 @@
-var myApp = angular.module('myApp', []);
+var myApp = angular.module('myApp', ['ngRoute']);
+
+myApp.config(function($routeProvider) {
+    $routeProvider
+
+        .when('/test',{
+            templateUrl: 'partial/test.html',
+            controller: 'testCtrl'
+
+    })
+
+        .when('/clima/:Codigo/:Dias', {
+            templateUrl : 'partial/clima.html',
+            controller  : 'ParamHomeCtrl'
+        });
+});
 
 myApp.service('ClimaService', function(){
     this.getWeatherIcon = function (weather) {
 
         var result='';
 
-        var artlist = [{key:'clear',url:'icons/art_clear.png'},
+        var artlist = [{key:'Clear',url:'icons/art_clear.png'},
             {key: 'Clouds' , url:'icons/art_clouds.png'},
-            {key: 'fog', url:'icons/art_fog.png'},
-            {key:'light cloulds',url:'icons/art_light_clouds.png'},
-            {key:'light rain', url:'icons/art_light_rain.png'},
+            {key: 'Fog', url:'icons/art_fog.png'},
+            {key:'Llight Ccloulds',url:'icons/art_light_clouds.png'},
+            {key:'Light Rain', url:'icons/art_light_rain.png'},
             {key: 'Rain', url:'icons/art_rain.png'},
-            {key:'snow',url:'icons/art_snow.png'},
-            {key:'storm', url:'icons/art_storm.png'}];
+            {key:'Snow',url:'icons/art_snow.png'},
+            {key:'Storm', url:'icons/art_storm.png'}];
 
         angular.forEach(artlist, function(value, key) {
 
@@ -63,14 +78,8 @@ myApp.factory('ClimaFactory',['$http', '$q', function($http, $q) {
 myApp.controller('HomeCtrl',['$scope','ClimaFactory','ClimaService',function($scope, clima,cservice){
 
     $scope.GetData = function(){
-
-
         clima.getClima($scope.Codigo,$scope.Dias).then( function(data){
-
-
             $scope.climas = data;
-
-
         });
 
         $scope.getWeatherIcon = function(item){
@@ -81,4 +90,19 @@ myApp.controller('HomeCtrl',['$scope','ClimaFactory','ClimaService',function($sc
 
 
 }]);
+
+myApp.controller('ParamHomeCtrl',function($scope,$routeParams, ClimaFactory,ClimaService){
+
+    ClimaFactory.getClima($routeParams.Codigo,$routeParams.Dias).then( function(data){
+
+            $scope.climas = data;
+        });
+        $scope.getWeatherIcon = function(item){
+            return ClimaService.getWeatherIcon(item)}
+
+
+
+
+
+});
 
